@@ -18,10 +18,4 @@ Figures are written to `output/plots/classic/`.
 
 ## Usage
 
-```bash
-pip install -r requirements.txt
-cd notebooks
-jupyter notebook experiments.ipynb
-```
-
 Run the notebook from inside `notebooks/` so the relative output path resolves correctly.
