@@ -1,0 +1,17 @@
+signal classes: [3, 10, 16, 19, 22, 24, 29, 32, 46, 47]  Z_A: [4.5, 4.28, 2.5, 3.17, 2.72, 3.61, 3.39, 4.06, 2.94, 3.83]
+mu: [0.00399, 0.00411, 0.00251, 0.00272, 0.00237, 0.00429, 0.00317, 0.00586, 0.00414, 0.00563]
+/home/sergio/Documentos/Projects/LEE_review/scripts/LEEutils.py:125: RuntimeWarning: invalid value encountered in log
+  return np.sum(nu - n * np.log(nu), axis=-1)
+/home/sergio/Documentos/Projects/LEE_review/scripts/LEEutils.py:125: RuntimeWarning: invalid value encountered in log
+  return np.sum(nu - n * np.log(nu), axis=-1)
+/home/sergio/Documentos/Projects/LEE_review/scripts/LEEutils.py:125: RuntimeWarning: invalid value encountered in log
+  return np.sum(nu - n * np.log(nu), axis=-1)
+calib: <N(c0)> from 2.47 to 5.73
+[calib: 141s]
+/home/sergio/Documentos/Projects/LEE_review/scripts/LEEutils.py:125: RuntimeWarning: invalid value encountered in log
+  return np.sum(nu - n * np.log(nu), axis=-1)
+  None       FWER=0.852 FDR=0.201 <false>=1.93 <true>=7.05
+  Bonferroni FWER=0.041 FDR=0.011 <false>=0.04 <true>=3.41
+  Sidak      FWER=0.042 FDR=0.011 <false>=0.04 <true>=3.43
+  BH         FWER=0.218 FDR=0.041 <false>=0.26 <true>=4.87
+[ensemble: 211s]
