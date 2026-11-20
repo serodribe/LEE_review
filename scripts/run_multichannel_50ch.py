@@ -12,12 +12,13 @@ Design (fixed in advance, seed DESIGN_SEED):
 
 Steps (independent random streams):
   calib    : <N(c0)> per class                                                        (seed [SEED + 1, class])
+  single   : one pseudo-experiment -> q_hat, p_GV and the classes selected by each procedure   (seed SEED)
   ensemble : N_REP pseudo-experiments -> q_hat and p_GV per class, FWER, FDR, identification rates
                                                                                        (seed [SEED + 2, class])
-Outputs in output/data/screening_50ch/: calib.json, ensemble.npz, ensemble.json
+Outputs in output/data/screening_50ch/: calib.json, single.json, ensemble.npz, ensemble.json
 
 Usage (from the repository root):
-    python scripts/run_multichannel_50ch.py [calib] [ensemble] [--n-jobs N]   (default: all steps)
+    python scripts/run_multichannel_50ch.py [calib] [single] [ensemble] [--n-jobs N]   (default: all steps)
 """
 import argparse
 import json
@@ -72,6 +73,17 @@ def calib(n_jobs):
     print(f"calib: <N(c0)> from {N0.min():.2f} to {N0.max():.2f}", flush=True)
 
 
+def single(n_jobs):
+    N0 = np.array([r[0] for r in json.load(open(os.path.join(OUT_DIR, "calib.json")))["N0"]])
+    rng = np.random.default_rng(SEED)
+    q = np.array([qmax_and_up(rng.poisson(U.expected_channel(NU[i], MU[i], M_TRUE, np.hypot(GAMMA, SIG[i])))[None].astype(float),
+                              U.sig_shapes(m_grid, SIG[i]))[0][0] for i in range(N_CH)])
+    p = U.p_gv(q, N0, C0)
+    sel = {k: [int(i) + 1 for i in np.flatnonzero(v[0])] for k, v in U.decisions(p[None], ALPHA).items()}
+    print("single: selected", sel, flush=True)
+    json.dump(dict(seed=SEED, q=q.tolist(), p=p.tolist(), selected=sel), open(os.path.join(OUT_DIR, "single.json"), "w"), indent=1)
+
+
 def ensemble(n_jobs):
     N0 = np.array([r[0] for r in json.load(open(os.path.join(OUT_DIR, "calib.json")))["N0"]])
     qhat = np.zeros((N_REP, N_CH))
@@ -85,7 +97,8 @@ def ensemble(n_jobs):
         V, R = rej[:, ~is_sig].sum(1), rej.sum(1)
         S = rej[:, is_sig].sum(1)
         fdp = np.where(R > 0, V / np.maximum(R, 1), 0.0)
-        out[name] = dict(fwer=float(np.mean(V > 0)), fdr=float(fdp.mean()), mean_false=float(V.mean()),
+        out[name] = dict(fwer=float(np.mean(V > 0)), fwer_err=float(np.sqrt(np.mean(V > 0) * (1 - np.mean(V > 0)) / N_REP)),
+                         fdr=float(fdp.mean()), fdr_err=float(fdp.std() / np.sqrt(N_REP)), mean_false=float(V.mean()),
                          mean_true=float(S.mean()), ident={int(i) + 1: float(rej[:, i].mean()) for i in SIG_IDX})
         print(f"  {name:10s} FWER={out[name]['fwer']:.3f} FDR={out[name]['fdr']:.3f} "
               f"<false>={V.mean():.2f} <true>={S.mean():.2f}", flush=True)
@@ -97,11 +110,11 @@ def ensemble(n_jobs):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("steps", nargs="*", help="calib, ensemble (default: all)")
+    ap.add_argument("steps", nargs="*", help="calib, single, ensemble (default: all)")
     ap.add_argument("--n-jobs", type=int, default=U.N_JOBS)
     a = ap.parse_args()
-    steps = a.steps or ["calib", "ensemble"]
-    if not set(steps) <= {"calib", "ensemble"}:
+    steps = a.steps or ["calib", "single", "ensemble"]
+    if not set(steps) <= {"calib", "single", "ensemble"}:
         ap.error(f"unknown step in {steps}")
     os.makedirs(OUT_DIR, exist_ok=True)
     print("signal classes:", (SIG_IDX + 1).tolist(), " Z_A:", Z_A[SIG_IDX].round(2).tolist())

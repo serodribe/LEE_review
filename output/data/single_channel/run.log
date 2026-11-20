@@ -1,6 +1,6 @@
-10000 toys, 19 grids in 52s
-  sigma=4.23, batch 347: |grad| 3.7e-04 -> 2.8e-11 after 40 iterations
-1000 toys, 21 widths in 29s, worst |grad| = 7.7e-06
-fixed mass: 100000 toys in 3s, worst |grad| = 3.8e-11
-grid 100: 300000 toys in 129s, worst |grad| = 3.6e+03
-grid 350: 300000 toys in 328s, worst |grad| = 3.4e-02
+fixed mass: 100000 toys in 3s, worst |grad| = 3.4e-11
+grid 100: 300000 toys in 118s, worst |grad| = 1.0e-08
+grid 350: 300000 toys in 334s, worst |grad| = 1.1e-05
+10000 toys, 19 grids in 56s
+  sigma=4.48, batch 104: |grad| 3.2e-03 -> 2.6e-11 after 40 iterations
+1000 toys, 21 widths in 29s, worst |grad| = 4.5e-05

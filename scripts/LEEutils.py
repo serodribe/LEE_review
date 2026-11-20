@@ -73,7 +73,7 @@ MU_SIG = 0.02    # fixed signal fraction
 LAM = 0.5        # fixed background decay rate
 N_EVENTS = 100000
 
-BINS = np.linspace(XMIN, XMAX, 70)          # bin edges: 69 bins of width 0.145
+BINS = np.linspace(XMIN, XMAX, 71)          # bin edges: 70 bins of width 1/7
 CENTERS = 0.5 * (BINS[:-1] + BINS[1:])
 DX = BINS[1] - BINS[0]
 RANGE = XMAX - XMIN                         # scan range U - L
@@ -365,10 +365,10 @@ def run_batches(worker, n_toys, batch, seed, *args, n_jobs=N_JOBS):
 # ------------------------------------------------------------
 # Plot: global p-values vs rank with all multiple-testing thresholds
 # ------------------------------------------------------------
-def plot_multiple_testing(p_global_toys, sig_channels, fname, alpha=0.05):
+def plot_multiple_testing(p_global_toys, sig_channels, fname, alpha=0.05, ylabel='Median GV-corrected $p$-value'):
     """
     Median GV-corrected p-value per channel over the toys (error bars: central 68% interval, 16th-84th percentiles),
-    ranked by the median, with no-correction, Bonferroni, Šidák and BH thresholds.
+    ranked by the median, with no-correction, Bonferroni, Šidák and BH thresholds. With a single toy, its p-values.
     """
     p_global_toys = np.clip(np.atleast_2d(p_global_toys), None, 1.0)  # (N_TOYS, N_CHANNELS)
     N_CHANNELS = p_global_toys.shape[1]
@@ -411,7 +411,7 @@ def plot_multiple_testing(p_global_toys, sig_channels, fname, alpha=0.05):
     ax.xaxis.set_major_locator(mpl.ticker.MaxNLocator(integer=True))
     ax.tick_params(axis='x', which='minor', bottom=False, top=False)
     ax.set_xlabel('Rank $k$')
-    ax.set_ylabel('Median GV-corrected $p$-value')
+    ax.set_ylabel(ylabel)
     ax.legend(frameon=False, loc='center left', bbox_to_anchor=(1.02, 0.5), handlelength=2.2, labelspacing=1.1)
     fig.tight_layout()
 
